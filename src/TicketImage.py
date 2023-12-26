@@ -12,3 +12,6 @@ class TicketImage:
     def show(self, title: str):
         cv.imshow(title, self.image)
 
+    def get_path(self):
+        return self.path
+

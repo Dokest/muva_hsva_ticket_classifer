@@ -4,6 +4,7 @@ import pandas as pd
 from pathlib import Path
 import multiprocessing
 import numpy as np
+from matplotlib import pyplot as plt
 
 from src.classify import classify
 from src.image_operations import load_images, generate_scale_pyramid, normalize_image
@@ -31,11 +32,22 @@ def load_logos_csv(path: str) -> []:
 
 def score(labels, image_labels):
     total_score = 0
-    for i, logo_path in range(len(labels)):
-        if labels[i] == image_labels[logo_path]:
+    for i in range(len(labels)):
+        path, label = labels[i]
+        if label == image_labels[path]:
             total_score += 1
 
-    return total_score / len(labels) * 100
+    total_score = total_score / len(labels) * 100
+    error = 100 - total_score
+    print(f"Accuracy: {total_score}%")
+
+    bars = ["Accuracy"] + ["Error"]
+    colors = ["green"] + ["red"]
+    plt.bar(np.arange(2), [total_score] + [error], color=colors, tick_label=bars)
+    plt.ylabel('Percentage')
+    plt.ylim(0, 100)
+    plt.title("Summary")
+    plt.show()
 
 
 def main():
@@ -56,7 +68,7 @@ def main():
     # Generate multiple logo version with different scales
     scales = [0.5, 0.75, 1.0, 1.25, 1.5, 2, 3, 5]
     logos = np.array([generate_scale_pyramid(logo, scales) for logo in logos]).flatten()
-
+    labeled_paths = []
     num_processes = multiprocessing.cpu_count()
     with multiprocessing.Pool(processes=num_processes) as pool:
         # Execute in the classification in parallel
@@ -64,12 +76,12 @@ def main():
         results = pool.starmap(classify, image_logo_pairs)
 
         # Get results for each image
-        for i, (conf, logo_index) in enumerate(results):
+        for i, (conf, logo_index, image_path) in enumerate(results):
             logo_path = logos[logo_index].path
             label = get_logo_label(logo_path, logo_labels)
-            print(i, label)
-
-    # total_score = score(labels, image_labels)
+            labeled_paths.append((image_path, label))
+            print(i, image_path, label)
+    score(labeled_paths, image_labels)
 
 
 if __name__ == "__main__":

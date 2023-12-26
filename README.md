@@ -4,7 +4,7 @@
 - [x] Realizar procesado de imagen con Pillow -> YES (Preprocesado)
 - [x] Realizar procesado de imagen con OpenCV -> YES (Detección)
 - [ ] Generar un vídeo con el resultado -> ??
-- [ ] Mostrar resultados con Matplotlib o Seaborn -> YES (Resultados)
+- [x] Mostrar resultados con Matplotlib o Seaborn -> YES (Resultados)
 - [ ] Integrar código MATLAB en el código Python -> NOPE
 - [x] Transformar o manipular datos con Pandas -> YES (Carga etiquetas)
 - [ ] Procesar datos 3D con open3D -> NOPE
