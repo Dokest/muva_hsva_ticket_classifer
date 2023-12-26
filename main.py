@@ -1,14 +1,10 @@
 import os
-import cv2 as cv
 import numba
-from PIL import Image
-from matplotlib import pyplot
 import pandas as pd
 from pathlib import Path
 import multiprocessing
 import numpy as np
 
-from src.TicketImage import TicketImage
 from src.classify import classify
 from src.image_operations import load_images, generate_scale_pyramid, normalize_image
 
@@ -57,14 +53,14 @@ def main():
     logos = load_images(logo_folder)
     logos = [normalize_image(logo, 100) for logo in logos]
 
+    # Generate multiple logo version with different scales
     scales = [0.5, 0.75, 1.0, 1.25, 1.5, 2, 3, 5]
     logos = np.array([generate_scale_pyramid(logo, scales) for logo in logos]).flatten()
 
     num_processes = multiprocessing.cpu_count()
     with multiprocessing.Pool(processes=num_processes) as pool:
-        image_logo_pairs = [(image, logos) for image in images]
-
         # Execute in the classification in parallel
+        image_logo_pairs = [(image, logos) for image in images]
         results = pool.starmap(classify, image_logo_pairs)
 
         # Get results for each image

@@ -20,11 +20,10 @@ def classify(image: TicketImage, logos: [TicketImage]) -> (float, int):
             max_conf_index = i
             max_conf_loc = max_loc
 
-    # cv.imshow(f"{image.path}_ORIGINAL", image_data)
-    # cv.imshow(f"{image.path}_LOGO", logos[max_conf_index].image)
-    # cv.waitKey(0)
+    # Draw the detection for the best case
     draw_detection(image_data, logos[max_conf_index].image, max_conf_loc)
 
+    # Draw the image with its best match
     plt.subplot(121)
     plt.imshow(image_data)
     plt.subplot(122)
