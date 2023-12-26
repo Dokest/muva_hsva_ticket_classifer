@@ -5,64 +5,14 @@ from PIL import Image
 from matplotlib import pyplot
 import pandas as pd
 from pathlib import Path
+import multiprocessing
+import numpy as np
 
 from src.TicketImage import TicketImage
+from src.classify import classify
+from src.image_operations import load_images, generate_scale_pyramid, normalize_image
 
 
-def load_images(folder: str) -> [TicketImage]:
-    image_paths = os.listdir(folder)
-
-    images = []
-
-    for image_path in image_paths:
-        complete_path = os.path.join(folder, image_path)
-
-        if not os.path.isfile(complete_path):
-            continue
-
-        image = Image.open(complete_path)
-
-        if image.mode in ('P', 'LA', 'RGBA'):
-            image = image.convert('RGBA')
-
-        image = image.convert("L")
-
-        images.append(TicketImage(Path(complete_path).as_posix(), image))
-
-    return images
-
-
-def detect_logo_confidence(image: numba.uint8[:, :], logo: numba.uint8[:, :]) -> float:
-    result = cv.matchTemplate(image, logo, cv.TM_CCOEFF_NORMED)
-    _, maxVal, _, maxLoc = cv.minMaxLoc(result)
-
-    # def draw_detection():
-    #     print(logo.shape)
-    #     h, w, _ = logo.shape
-    #     cv.rectangle(image, maxLoc, (maxLoc[0] + w, maxLoc[1] + h), (255, 0, 0))
-
-    # draw_detection()
-    # cv.imshow("ASDASD", image)
-    # cv.waitKey(0)
-
-    return maxVal
-
-
-def classify(image, logos: [TicketImage]) -> (float, int):
-    max_conf: float = 0
-    max_conf_index: int = 0
-
-    for i, logo in enumerate(logos):
-        conf = detect_logo_confidence(image, logo.image)
-
-        if conf > max_conf:
-            max_conf = conf
-            max_conf_index = i
-
-    return max_conf, max_conf_index
-
-
-@numba.jit(nopython=True)
 def get_logo_label(logo_path: str, all_labels: numba.types.DictType) -> str:
     if logo_path in all_labels:
         return all_labels[logo_path]
@@ -99,19 +49,31 @@ def main():
     logo_folder = os.path.join("images", "logos")
     image_folder = "images"
 
+    # Load images
     images = load_images(image_folder)
+    images = [normalize_image(image, 1000) for image in images]
+
+    # Load and normalize logos
     logos = load_images(logo_folder)
-    
-    for i in range(len(images)):
-        conf, max_index = classify(images[i].image, logos)
+    logos = [normalize_image(logo, 100) for logo in logos]
 
-        logo_path = logos[max_index].path
-        label = get_logo_label(logo_path, logo_labels)
+    scales = [0.5, 0.75, 1.0, 1.25, 1.5, 2, 3, 5]
+    logos = np.array([generate_scale_pyramid(logo, scales) for logo in logos]).flatten()
 
-        print(label)
-        labels = []
-        labels.append(label)
-    total_score = score(labels, image_labels)
+    num_processes = multiprocessing.cpu_count()
+    with multiprocessing.Pool(processes=num_processes) as pool:
+        image_logo_pairs = [(image, logos) for image in images]
+
+        # Execute in the classification in parallel
+        results = pool.starmap(classify, image_logo_pairs)
+
+        # Get results for each image
+        for i, (conf, logo_index) in enumerate(results):
+            logo_path = logos[logo_index].path
+            label = get_logo_label(logo_path, logo_labels)
+            print(i, label)
+
+    # total_score = score(labels, image_labels)
 
 
 if __name__ == "__main__":

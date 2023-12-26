@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
 
+
 class TicketImage:
     def __init__(self, path: str, image):
         self.path = path
