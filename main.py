@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from src.classify import classify
 from src.colors import color_ok, color_fail
 from src.image_operations import load_images, generate_scale_pyramid, general_preprocess
+from src.utils import save_classified_images
 
 
 def get_logo_label(logo_path: str, all_labels: dict) -> str:
@@ -90,7 +91,7 @@ def main():
             predicted_label = get_logo_label(logo_path, logo_labels)
 
             labeled_images.append((image_path, predicted_label))
-
+    save_classified_images(logo_labels, images, labeled_images)
     score(labeled_images, ground_truth_labels)
 
 
