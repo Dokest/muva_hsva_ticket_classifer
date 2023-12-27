@@ -10,11 +10,11 @@ def classify(image: TicketImage, logos: [TicketImage]) -> (float, int, float):
     max_conf_index: int = 0
     max_conf_loc = (0, 0)
 
-    image_data = image.image
-    image_path = image.get_path()
+    image_data = image.grayscale_image
+    image_path = image.path
 
     for i, logo in enumerate(logos):
-        conf, max_loc = detect_logo_confidence(image_data, logo.image)
+        conf, max_loc = detect_logo_confidence(image_data, logo.grayscale_image)
 
         if conf > max_conf:
             max_conf = conf
@@ -22,13 +22,14 @@ def classify(image: TicketImage, logos: [TicketImage]) -> (float, int, float):
             max_conf_loc = max_loc
 
     # Draw the detection for the best case
-    draw_detection(image_data, logos[max_conf_index].image, max_conf_loc)
+    draw_detection(image.original_image, logos[max_conf_index].grayscale_image, max_conf_loc)
 
     # Draw the image with its best match
     plt.subplot(121)
-    plt.imshow(image_data)
+    plt.imshow(image.original_image)
     plt.subplot(122)
-    plt.imshow(logos[max_conf_index].image)
+    plt.imshow(logos[max_conf_index].original_image)
+    plt.title("Confidence: {:.2f}".format(max_conf))
     plt.show()
 
     return max_conf, max_conf_index, image_path
