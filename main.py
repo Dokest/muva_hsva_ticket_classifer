@@ -73,7 +73,7 @@ def main():
     logos = [general_preprocess(logo, 100) for logo in logos]
 
     # Generate multiple logo version with different scales
-    scales = [0.5, 0.75, 1.0, 1.25, 1.5, 2, 3, 5]
+    scales = [1.0, 1.25, 1.5, 2, 3, 5]
     logos = np.array([generate_scale_pyramid(logo, scales) for logo in logos]).flatten()
 
     labeled_images = []
@@ -90,7 +90,6 @@ def main():
             predicted_label = get_logo_label(logo_path, logo_labels)
 
             labeled_images.append((image_path, predicted_label))
-            # print(i, image_path, label)
 
     score(labeled_images, ground_truth_labels)
 

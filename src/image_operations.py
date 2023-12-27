@@ -39,6 +39,7 @@ def normalize_image(ticket_image: TicketImage, max_width) -> TicketImage:
 
 def generate_scale_pyramid(image: TicketImage, scales: [float]) -> []:
     images = [None] * len(scales)
+
     for i, scale in enumerate(scales):
         rescaled_image = cv.resize(image.grayscale_image, None, fx=scale, fy=scale)
 
@@ -59,6 +60,7 @@ def draw_detection(image, logo, max_loc):
 def general_preprocess(image: TicketImage, max_width):
     normalized_image = normalize_image(image, max_width)
 
+    # We tried preprocessing the image, but we got worse results. We opted to go without preprocessing.
     # normalized_image.grayscale_image = cv.equalizeHist(normalized_image.grayscale_image)
     # normalized_image.grayscale_image = cv.adaptiveThreshold(normalized_image.grayscale_image,255,
     #                                                         cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY,11,2)
