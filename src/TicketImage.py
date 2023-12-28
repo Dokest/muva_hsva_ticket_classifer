@@ -4,6 +4,9 @@ import cv2 as cv
 
 
 class TicketImage:
+    """
+    Class to handle each ticket and its related data
+    """
     def __init__(self, path: str, image: Image):
         self.path = path
 

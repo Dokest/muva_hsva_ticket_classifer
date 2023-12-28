@@ -9,13 +9,14 @@ from src.utils import save_classified_images, load_csv, get_logo_label
 
 
 def main():
+    # Load the ground truth labels
     logo_labels = load_csv("etiquetas/logos.csv")
     ground_truth_labels = load_csv("etiquetas/gt.csv")
 
     logo_folder = os.path.join("images", "logos")
     image_folder = "images"
 
-    # Load images
+    # Load images and normalize the tickets
     images = load_images(image_folder)
     images = [general_preprocess(image, 1000) for image in images]
 
@@ -23,12 +24,14 @@ def main():
     logos = load_images(logo_folder)
     logos = [general_preprocess(logo, 100) for logo in logos]
 
-    # Generate multiple logo version with different scales
+    # Generate the pyramid of scales for each logo
     scales = [1.0, 1.25, 1.5, 2, 3, 5]
     logos = np.array([generate_scale_pyramid(logo, scales) for logo in logos]).flatten()
 
+    # Container for the predicted labels
     labeled_images: [(str, str, TicketImage)] = []
 
+    # Prepare the threads
     num_processes = multiprocessing.cpu_count()
     with multiprocessing.Pool(processes=num_processes) as pool:
         # Execute in the classification in parallel
@@ -42,7 +45,10 @@ def main():
 
             labeled_images.append((image_path, predicted_label, images[i]))
 
+    # Organize the classified images into folders
     save_classified_images(logo_labels, labeled_images)
+
+    # Show graphs with the scores
     logo_score(logo_labels, labeled_images, ground_truth_labels)
     display_total_score(labeled_images, ground_truth_labels)
 
