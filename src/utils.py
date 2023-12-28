@@ -10,10 +10,10 @@ def save_classified_images(logos, labeled_images):
     for logo in logos:
         path = os.path.join(output, logos[logo])
         path = Path(path).as_posix()
-
+        # Create the directory for the logo
         if not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
-
+    # Save each image in their label directory
     for image_path, predicted_label, ticket_image in labeled_images:
         ipath = ticket_image.path.split("/")[-1]
         ipath = os.path.join(output, predicted_label, ipath)

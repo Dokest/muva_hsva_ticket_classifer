@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from PIL import Image
 import cv2 as cv
-
 from src.TicketImage import TicketImage
 
 
@@ -18,7 +17,7 @@ def load_images(folder: str) -> [TicketImage]:
             continue
 
         image = Image.open(complete_path)
-
+        # Check if the image is different from RGB
         if image.mode in ("P", "LA", "RGBA", "L"):
             image = image.convert("RGB")
 
@@ -28,6 +27,7 @@ def load_images(folder: str) -> [TicketImage]:
 
 
 def normalize_image(ticket_image: TicketImage, max_width) -> TicketImage:
+    """Prepare all the images to have the same width and ratio"""
     image = ticket_image.grayscale_image
     image_ratio = image.shape[0] / image.shape[1]
 
@@ -39,7 +39,7 @@ def normalize_image(ticket_image: TicketImage, max_width) -> TicketImage:
 
 def generate_scale_pyramid(image: TicketImage, scales: [float]) -> []:
     images = [None] * len(scales)
-
+    # Generate the scaled image and save it as a new TicketImage
     for i, scale in enumerate(scales):
         rescaled_image = cv.resize(image.grayscale_image, None, fx=scale, fy=scale)
 
