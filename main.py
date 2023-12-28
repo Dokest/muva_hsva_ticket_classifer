@@ -5,12 +5,12 @@ from src.TicketImage import TicketImage
 from src.classify import classify
 from src.image_operations import load_images, generate_scale_pyramid, general_preprocess
 from src.scoring import logo_score, display_total_score
-from src.utils import save_classified_images, load_logos_csv, get_logo_label
+from src.utils import save_classified_images, load_csv, get_logo_label
 
 
 def main():
-    logo_labels = load_logos_csv("etiquetas/logos.csv")
-    ground_truth_labels = load_logos_csv("etiquetas/gt.csv")
+    logo_labels = load_csv("etiquetas/logos.csv")
+    ground_truth_labels = load_csv("etiquetas/gt.csv")
 
     logo_folder = os.path.join("images", "logos")
     image_folder = "images"

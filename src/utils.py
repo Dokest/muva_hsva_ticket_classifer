@@ -29,7 +29,7 @@ def get_logo_label(logo_path: str, all_labels: dict) -> str:
     return "Unknown"
 
 
-def load_logos_csv(path: str) -> []:
+def load_csv(path: str) -> []:
     df = pd.read_csv(path, sep=",")
     data = dict()
 

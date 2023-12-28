@@ -11,15 +11,18 @@ def logo_score(logos, predicted_label, gt):
         a_logos.append(logos[logo])
         for i in range(len(predicted_label)):
             path, predicted, _ = predicted_label[i]
+            # Check the label
             if predicted == logos[logo]:
                 color_fn = color_ok if predicted == gt[path] else color_fail
 
                 print(color_fn(f"Predicted: {predicted}, Real: {gt[path]} :: {path}"))
-
+                # Check the real label
                 if predicted == gt[path]:
                     total_score += 1
         accuracy.append(total_score)
     errors = [None] * len(accuracy)
+
+    # Normalize the results
     for i in range(len(accuracy)):
         errors[i] = 5 - accuracy[i]
 
@@ -33,22 +36,17 @@ def display_score(accuracy, errors, logos):
     ce = (223/255, 46/255, 56/255)
     bar_width = 0.5
 
-    # Crear la figura y los ejes
+    # Create the figure
     fig, ax = plt.subplots()
 
-    # Crear barras apiladas
+    # Create stacked bars
     ax.bar(logos, accuracy, label='Acierto', color=ca, width=bar_width)
     ax.bar(logos, errors, bottom=accuracy, label='Error', color=ce, width=bar_width)
 
-    # Agregar leyenda
     ax.legend()
-
-    # Etiquetas y título
     ax.set_xlabel('Categorías')
     ax.set_ylabel('Porcentaje')
     ax.set_title('Aciertos por clase')
-
-    # Mostrar el gráfico
     plt.show()
 
 
@@ -60,10 +58,10 @@ def display_total_score(predicted_labels, gt_labels):
         color_fn = color_ok if predicted == gt_labels[path] else color_fail
 
         print(color_fn(f"Predicted: {predicted}, Real: {gt_labels[path]} :: {path}"))
-
+        # Check the real label
         if predicted == gt_labels[path]:
             total_score += 1
-
+    # Normalize the results
     total_score = [total_score / len(predicted_labels) * 100]
     error = [100 - total_score[0]]
 
