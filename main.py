@@ -1,11 +1,10 @@
 import os
 import multiprocessing
 import numpy as np
-
 from src.TicketImage import TicketImage
 from src.classify import classify
 from src.image_operations import load_images, generate_scale_pyramid, general_preprocess
-from src.scoring import display_score
+from src.scoring import logo_score, display_total_score
 from src.utils import save_classified_images, load_logos_csv, get_logo_label
 
 
@@ -44,7 +43,8 @@ def main():
             labeled_images.append((image_path, predicted_label, images[i]))
 
     save_classified_images(logo_labels, labeled_images)
-    display_score(labeled_images, ground_truth_labels)
+    logo_score(logo_labels, labeled_images, ground_truth_labels)
+    display_total_score(labeled_images, ground_truth_labels)
 
 
 if __name__ == "__main__":
